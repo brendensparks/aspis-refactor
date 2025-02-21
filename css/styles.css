@@ -1,0 +1,1064 @@
+/* AXIOMS, via https://every-layout.dev/rudiments/axioms/
+
+Text elements no larger than 70ch.
+
+*/
+
+/*
+Lea Verou's pseudo-private properties from her CSS Variable Secrets presentation
+--_color: var(--color, [fallback/default]);
+...
+color: var(--_color);
+
+*/
+
+/* LAYERS
+from Modern CSS for Dynamic Component-based Architecture - Stephanie Eckles 
+layer order suggestion:
+@layer reset, theme, global, layout, components, utilities, states;
+*/
+
+@layer reset, theme, global, layout, components, ugc, utilities, states, overrides;
+
+@layer reset {
+
+:root {
+    --link-color: currentColor;
+    --font-body: system-ui, sans-serif;
+    --font-display: 'Times New Roman', serif;
+    --font-size: 1rem;
+    --measure: 66ch; /* if 70ch limit is axiom, why < 70 here? -b 5.29 */
+    --vr: 1rem;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    --_background-color: var(--background-color, white);
+    --_background-image: var(--background-image, none);
+    --_color: var(--color, var(--text-color, black));
+    --_text-align: var(--text-align, initial);
+    /*--_max-inline-size:var(--measure,initial);*/
+    margin: 0;
+    background-color: var(--_background-color);
+    background-image: var(--_background-image);
+    color: var(--_color);
+    text-align: var(--_text-align);
+    /*
+    Definitely don't want this on *
+    max-inline-size:var(--_max-inline-size);
+    */
+}
+
+html {
+    -moz-text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+    max-inline-size: none;
+}
+
+picture,
+video,
+canvas {
+    display: block;
+    max-width: 100%;
+}
+
+/* img reset via Harry Roberts: https://twitter.com/csswizardry/status/1717841334462005661 */
+img {
+    max-width: 100%;    
+    height: auto;
+    vertical-align: middle;
+    font-style:italic;
+    background-repeat: no-repeat;
+    background-size: cover;
+    shape-margin: 0.75rem;
+
+}
+
+input,
+button,
+textarea,
+select {
+    --_font-size: var(--font-size, inherit);
+    font-family: inherit;
+    font-size: var(--_font-size);
+}
+
+body {
+    --_font-family: var(--font-body, inherit);
+    min-height: 100vh;
+    line-height: 1.5;
+    max-inline-size: none;
+    font-family: var(--_font-family);
+}
+
+h1,
+h2,
+h3,
+h4,
+button,
+input,
+label {
+    line-height: 1.1;    
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    --_font-family: var(--font-display, inherit);
+    --_font-size: var(--font-size, initial);
+    text-wrap: balance;
+    font-family: var(--_font-family);
+    font-size: var(--_font-size);
+}
+
+svg {
+    stroke: var(--stroke-color,currentColor);
+    fill: var(--fill-color,currentColor);
+}
+
+p, blockquote, a {
+    --_font-family: var(--font-body, inherit);
+    --_font-size: var(--font-size, initial);
+    font-family: var(--_font-family);
+    font-size: var(--_font-size);
+}
+
+a {    
+    --_color: var(--link-color, blue);
+    --_text-decoration: var(--text-decoration, underline);
+    color: var(--_color);
+    text-decoration: var(--_text-decoration);
+    text-decoration-skip-ink: auto;
+    text-decoration-thickness: max(0.08em, 1px);
+    text-underline-offset: 0.15em;    
+}
+
+/* <a> elements that don't have a class get default styles */
+a:not([class]) {
+/* moved to base <a> declaration 11.14.24 -b
+    text-decoration-skip-ink: auto;
+    text-decoration-thickness: max(0.08em, 1px);
+    text-underline-offset: 0.15em;
+*/
+}
+
+a[aria-current] {
+    --link-color: var(--text-color, black);    
+}
+
+hr {
+    margin-block-start: var(--vr, 1rem);
+    margin-block-end: var(--vr, 1rem);
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+}
+
+textarea:not([rows]) {
+    min-height: 10em
+}
+
+:target {
+    /* Scroll padding allowance above anchor links */
+    scroll-padding-block-start: calc(2* var(--vr, 1rem));
+}
+
+:focus {
+    /* Scroll padding allowance below focused elements to ensure they are clearly in view */
+    scroll-padding-block-end: 8vh;
+}
+
+:focus-visible {
+    --outline-size: max(2px, 0.15em);
+    outline: var(--outline-width, var(--outline-size)) var(--outline-style, solid) var(--outline-color, currentColor);
+    outline-offset: var(--outline-offset, var(--outline-size));
+}
+
+@font-face {
+    font-family: 'SJSUSpartan';
+    font-weight: normal;
+    src: local('SJSUSpartanRegular'), url('/aspis/fonts/SJSUSpartanRegular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'SJSUSpartan';
+    font-weight: bold;
+    src: local('SJSUSpartanBold'), url('/aspis/fonts/SJSUSpartanBold.woff') format('woff');
+
+}
+}
+
+@layer theme {
+
+:root {    
+    --sjsu-font-body: 'Helvetica Neue', system-ui, sans-serif;
+    --sjsu-font-display: 'Nunito Sans', Verdana, sans-serif;
+    --sjsu-font-spartan: 'SJSUSpartan', 'Times New Roman', serif;
+    --sjsu-color-blue: #0055a8;
+    --sjsu-color-gold: #e5a823;
+    --sjsu-color-rollover-blue: #1c88f4;
+    --sjsu-color-not-quite-black: #333333;
+    --sjsu-color-gray: #939597;
+    --sjsu-color-dark-gray: #53565a;
+    --sjsu-color-paseo-gray: #ededed;
+    --sjsu-color-normal-gray: #9b9b9b;
+    --sjsu-color-orange: #f08700;
+    --sjsu-gradient-blues: linear-gradient(-180deg, #0055a2 20%, #0761b3 100%);
+    /* vr = vertical rhythm */
+    --sjsu-vr: 2rem;
+    --sjsu-2vr: calc(2 * var(--sjsu-vr));
+    --sjsu-3vr: calc(3 * var(--sjsu-vr));
+    --sjsu-vr-half: calc(.5 * var(--sjsu-vr));
+    --sjsu-vr-quarter: calc(.5 * var(--sjsu-vr-half));
+    --sjsu-layout-width: 1280px;
+    --sjsu-grid-min: 30ch;
+    --sjsu-grid-gap: 2vw;
+    --padding: clamp(1rem, 3%, 1.5rem);
+    --padding-double: clamp(2rem, 6%, 3rem);
+    --padding-triple: clamp(3rem, 9%, 4.5rem);
+    --padding-extra: clamp(4rem, 12%, 6rem);
+    --padding-half: clamp(0.5rem, 1.5%, 1rem);
+    --container-max: var(--sjsu-layout-width);
+    --container-margins: 4rem;
+    --font-body: var(--sjsu-font-body, inherit);
+    --font-display: var(--sjsu-font-display, inherit);
+    --link-color: var(--sjsu-color-blue);
+    --text-color: var(--sjsu-color-not-quite-black);
+    --button-color: var(--sjsu-color-blue);    
+    --fill-color: white;
+    --stroke-color: transparent;
+
+    --angle-bracket-down: url('data:image/svg+xml');
+/*
+look at updating our color usage for gradients to oklch 1.13.25 -b
+linear-gradient(in oklch to right, oklch(##% #.### ###), oklch(##% #.### ###));
+can be combined with successive variable declarations and the @supports rule for progressive enhancement
+(oklch.com) & (atmos.style)
+https://ericportis.com/posts/2024/okay-color-spaces/
+
+color-mix() function allows for blending of colors
+
+relative colors: new feature that allows for derivative colors based on existing colors;
+"oklch(from var(--customBrandColor) l c h / 50%);"
+
+*/
+
+
+
+
+    /* UTOPIA - fluid typography and type scale
+https: //utopia.fyi/type/calculator?c=320,18,1.2,1240,23,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12  */
+
+    --step--2: clamp(0.7813rem, 0.733rem + 0.2413vw, 0.92rem);
+    --step--1: clamp(0.9375rem, 0.8636rem + 0.3696vw, 1.15rem);
+    --step-0: clamp(1.125rem, 1.0163rem + 0.5435vw, 1.4375rem);
+    --step-1: clamp(1.35rem, 1.1946rem + 0.7772vw, 1.7969rem);
+    --step-2: clamp(1.62rem, 1.4022rem + 1.0891vw, 2.2463rem);
+    --step-3: clamp(1.9438rem, 1.6433rem + 1.5022vw, 2.8075rem);
+    --step-4: clamp(2.3325rem, 1.9232rem + 2.0467vw, 3.5094rem);
+    --step-5: clamp(2.7994rem, 2.2472rem + 2.7609vw, 4.3869rem);
+
+}
+
+header {
+    --_font-size: var(--font-size, var(--step-0, 1rem));
+    --_font-family: var(--font-display, inherit);
+    font-size: var(--_font-size);
+    font-family: var(--_font-family);    
+}
+
+header button {
+    --font-size: var(--step--1, initial);
+    /* letter-spacing: 1px; */
+    line-height:1;
+    /*text-transform: uppercase;*/
+}
+
+body {
+    --_font-size: var(--font-size, var(--step-0, 1rem));
+    --_font-family: var(--font-body, inherit);
+    font-size: var(--_font-size);
+    font-family: var(--_font-family);    
+}
+
+/* hold off on forced-max-size until later, layout primitives handle this for now -b 5.29
+header, main, footer {
+    max-inline-size: var(--sjsu-layout-width);
+}
+*/
+
+h1 {
+    --font-family: var(--font-display, inherit);
+    --font-size: var(--step-4, initial);
+}
+
+h2 {
+    --font-family: var(--font-display, inherit);
+    --font-size: var(--step-3, initial);
+}
+
+h3 {
+    --font-family: var(--font-display, inherit);
+    --font-size: var(--step-2, initial);
+}
+
+h4 {
+    --font-family: var(--font-display, inherit);
+    --font-size: var(--step-1, initial);
+}
+
+h5 {
+    --font-family: var(--font-display, inherit);
+    --font-size: var(--step-0, initial);
+}
+
+h6 {
+    --font-family: var(--font-display, inherit);
+    --font-size: var(--step--1, initial);
+}
+
+p, li {
+    --font-size: var(--step-0);
+}
+
+a:hover,
+a:focus
+{
+    --link-color: var(--sjsu-color-rollover-blue);
+}
+
+a:is([class]):not(:hover) {
+    text-decoration: none;
+}
+
+blockquote {
+    --font-family: var(--font-body, inherit);
+    --font-size: var(--step-0, initial);
+    margin-block: var(--step-1, 1.3rem);
+    margin-inline: auto;
+    padding-block-start: var(--step-1, 1.3rem);
+    padding-inline-end: 0;
+    padding-block-end: var(--step--2, 0.43rem);
+    padding-inline-start: var(--step-3, 2.6rem);
+}
+
+blockquote::before {
+    content: "\201C";
+    line-height:1;
+    font-size: var(--step-5, 4rem);
+    font-weight: 800;
+    /*
+    Gotta find logical property replacements for these -b 5.29 
+    "inset-[inline/block]-[start/end]" -b 11.14
+    */
+    inset-inline-start: 0;
+    inset-block-start: 0;
+}
+
+hr {
+    border-block-start: 1px solid var(--sjsu-color-normal-gray);
+}
+
+    footer {
+        padding-block-start:64px;
+        background: url(https://www.sjsu.edu/aspis/media/bgs/bg-triangles-up-big.svg), var(--sjsu-gradient-blues);
+        background-position-y: bottom;
+        background-size: 100%, 100%;
+        border-top: 5px solid var(--sjsu-color-gold);        
+    }
+    
+    footer :is(p, li) {
+        --font-size: var(--step--1);
+    }
+    
+    footer :is(h2) {
+        --font-size: var(--step-1);
+    }
+    
+    footer :is(h3) {
+        --font-size: var(--step-0);
+    }
+    
+    footer :is(h4) {
+        --font-size: var(--step--1);     
+    }
+
+    footer :is(h5, h6) {
+        --font-size: var(--step--2);
+    }
+
+    
+.sjsu-theme-blue {
+    --text-color: white;
+    --link-color: white;
+    --button-color: var(--sjsu-color-blue);
+    --fill-color: white;
+}
+.sjsu-theme-blue:not(.bg) {
+    --background-color: var(--sjsu-color-blue);
+}
+
+.sjsu-theme-blue:is([class~=".bg"]) {
+    --background-color: transparent;
+}
+
+.sjsu-theme-blue a:hover, 
+.sjsu-theme-blue a:focus {
+    --link-color: white;
+}
+
+.sjsu-theme-light-gray {
+    --background-color: var(--sjsu-color-paseo-gray);
+    --text-color: var(--sjsu-color-not-quite-black);
+    --link-color: var(--sjsu-color-blue);
+}
+
+.sjsu-theme-default {
+    --background-color: white;
+    --text-color: var(--sjsu-color-not-quite-black);
+    --link-color: var(--sjsu-color-blue);
+    --fill-color: var(--sjsu-color-blue);
+}
+
+
+}
+
+@layer global {
+
+}
+
+@layer layout {
+    :root {
+        --s0: 0;
+        --s1: 1rem;
+        --s2: 2rem;
+        --s3: 4rem;
+        --s4: 8rem;
+    }
+
+@layer primitives {
+
+    box-l {
+            display: block;
+            padding: var(--s1);
+            border-width: var(--border-thin);
+            /* ↓ For high contrast mode */
+            outline: var(--border-thin) solid transparent;
+            outline-offset: calc(var(--border-thin) * -1);
+        }
+
+    center-l {
+    display: block;
+    box-sizing: content-box;
+    margin-inline: auto;
+    max-inline-size: var(--measure);
+    }
+
+    cluster-l {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    }
+
+    container-l {
+    display: block;
+    }
+
+    cover-l {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100vh;
+    padding: var(--s1);
+    }
+
+    frame-l {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+    frame-l>img,
+    frame-l>video {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    }
+
+    grid-l {
+    display: grid;
+    grid-gap: var(--s1);
+    align-content: start;
+    grid-template-columns: 100%;
+    }
+
+    grid-l {
+    display: grid;
+    grid-gap: var(--s1);
+    align-content: start;
+    grid-template-columns: 100%;
+    }
+
+    icon-l svg {
+
+    height: 1em;
+    /*height: 1cap;*/
+    width: 1em;
+    /*width: 1cap;*/
+
+    }
+
+    imposter-l {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+    }
+
+    sidebar-l {
+    display: flex;
+    flex-wrap: wrap;
+    }
+
+    sidebar-l>* {
+    flex-grow: 1;
+    }
+
+    stack-l {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    }
+
+    stack-l>*+* {
+    margin-block-start: var(--s1);
+    }
+
+    switcher-l {
+    display: flex;
+    flex-wrap: wrap;
+    }
+
+    switcher-l>* {
+    flex-basis: calc((var(--measure) - 100%) * 999);
+    flex-grow: 1;
+    }
+
+}
+
+/* from Scaling CSS Layout Beyond Pixels - Stephanie Eckles 
+
+Super flexible container element that automatically manages its own width based on the viewport size, trying to maintain at least 80ch width. No need to assign variable padding with media queries. */
+
+/* refactor this to remove the string 'container' from this class b/c it has somewhat of a more semantic meaning now that container queries are a thing. -b 1.13.25 */
+
+.container {
+    --_container-max: var(--container-max, 80ch);
+    --_container-margins: var(--container-margins, 4rem);
+    --background-color: transparent;
+    width: min(calc(100vw - var(--_container-margins)), var(--_container-max));
+    margin-inline: auto;
+}
+
+.wrap {
+    width: 100vw;
+}
+
+/* from Modern CSS for Dynamic Component-based Architecture - Stephanie Eckles
+"This utility creates a responsive set of columns that are auto-generated depending on the amount of available inline space. Includes custom property to define the minimum allowed size for a column, which will function as a "breakpoint" for each column before causing the overflow to become new rows. For the most flexibility, I also like to include a custom property to allow overriding the `gap`."
+ */
+
+.layout-grid {
+    --_layout-grid-min: var(--sjsu-grid-min, 30ch);
+    --_layout-grid-gap: var(--sjsu-grid-gap, 2vw);
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+            minmax(min(100%, var(--_layout-grid-min)), 1fr));
+    gap: var(--_layout-grid-gap);
+}
+
+/* Container query */
+:is(.layout-grid, .flex-layout-grid)>* {
+    container: var(--grid-item-container, grid-item) / inline-size;
+}
+
+/*
+possible alternative for column-making:
+https://codepen.io/kevinpowell/pen/wvZvdLN
+*/
+
+
+
+}
+
+@layer components {
+
+
+
+/* breadcrumb */
+/* maybe use a nav element for .bc? -b */
+.breadcrumb {
+    font-size: var(--step--2);
+}
+
+.breadcrumb a:not(:last-child)::after {
+    margin-inline: var(--step--2);
+    opacity: 1;
+    content: url('https://www.sjsu.edu/aspis/media/icons/ui/icon-angle-bracket-right-sjsu-gray-small.svg');
+}
+
+.sjsu-contact-region {
+    padding-block-start: 4rem;
+    padding-block-end: 6rem;
+}    
+    
+.sjsu-social-link-icon {
+    padding:9px;
+}
+
+.sjsu-footer-list :is(li) {
+    padding-block: 4px;
+}    
+    
+.o-coin {
+	display:block;
+	margin:-60px auto -68px;
+}
+
+
+/* .button
+This component has a de-facto API that allows for modular control over features using custom properties.
+(source for this? [prob S.Eckles; has possible conflicts w/ primitives though])
+
+*/
+
+.button {
+    color: var(--text-color, var(--primary));    
+    background-color: var(--button-color, var(--accent));
+    cursor: pointer;
+}
+
+.button:where(:has(.icon)) {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+}
+
+.button:where(:has(.inclusively-hidden)) {
+    border-radius: 50%;
+    padding: 0.5em;
+}
+
+.button:where(:not(:has(.icon))) {
+    text-align: center;
+    min-inline-size: 10ch;
+}
+
+.button:where(:not(:has(.inclusively-hidden))) {
+    padding: var(--button-padding, 0.35em 1em);
+    border-radius: 0;
+}
+
+.button:hover {
+    --button-bg: var(--accent--alt);
+    --button-color: var(--primary);
+}
+
+.button:focus-visible {
+    --outline-style: dashed;
+    --outline-offset: -0.35em;
+}
+
+.button.borderless:not(:hover, :focus) {
+    border:2px solid transparent;
+    background-color:transparent;
+}
+
+/* /.button */
+
+
+/*
+re: ".title-page"
+Are single-property CSS classes necessary for a templated page if we can pass variable declarations in a style attribute from within the template? -b 5.29
+Yes; style should be as separated from the XSL as possible. -b 5.29
+*/
+
+
+
+.linklist {
+    display:flex;
+    flex-wrap:wrap;
+    flex-direction: row;
+}
+
+.linklist.vertical {
+    flex-wrap:nowrap;
+    flex-direction:column;
+}
+
+
+    ul:is(.linklist) {
+        list-style-type: "";
+        padding-inline-start: 0;
+    }
+    
+    ul:is(.horizontal) :is(li) {
+        padding-inline-end: var(--step-0);
+    }
+
+
+
+/* Many of the nav-local properties are going to need to be generic'd with more custom properties for proper theming -b 1.15.25 */
+
+.nav-local {
+    margin-block: var(--sjsu-vr);
+}
+.nav-local a {
+    display:block;
+    border-inline-start:5px solid transparent;
+	padding-inline:var(--sjsu-vr-half);
+    padding-block:calc(0.5 * var(--sjsu-vr-half));
+    font-size: var(--step--1);
+}
+
+.nav-local a:hover,
+.nav-local a:focus {
+    --background-color: var(--sjsu-color-paseo-gray);
+}
+
+.nav-local a[aria-current] {    
+    --color: var(--link-color);
+    border-inline-start-color:var(--sjsu-color-gold, gold);
+    font-weight: bold;    
+}
+
+.nav-local .nested a {
+    border-inline-start-color:var(--sjsu-color-blue, blue);
+    padding-inline-start:var(--sjsu-vr);
+}
+
+.nav-local__item > a {
+	border-left-width:.375rem;
+	border-left-style:solid;
+	border-left-color:transparent;
+	text-decoration:none;
+}
+
+@media (hover: hover) {
+	.nav-local__item:not(.this-page) a:hover {
+		background-color:#ededed;
+		text-decoration:underline;
+	}		
+}
+
+.nav-local__item.this-page > a {
+	font-weight:bold;
+	border-color:#e5a823;
+}
+
+.nav-local__item--nested a {
+	font-weight:normal;
+	border-left-color:#0055a2;    
+	padding-left:2rem;
+}
+
+.nav-local__parent > a {
+	border-left:none;
+	padding-left:1.375rem;
+	text-indent:-1.375rem;
+	line-height:1.25;
+}
+
+.nav-local__parent > a::before {
+	content: "Back to ";
+	padding-left:1.375rem;
+	background-image:url(/aspis/media/icons/ui/icon-angle-bracket-left-sjsu-gray.svg);
+	background-repeat:no-repeat;
+	background-position:center left;
+}
+
+
+.nav-site {
+    --button-color: var(--sjsu-color-paseo-gray);
+}
+.nav-site a {
+    --font-size: var(--step--1);
+    padding-inline: var(--padding);    
+    padding-block: var(--padding-half);
+}
+    
+/***********************
+WAI-ARIA APG
+Disclosure Navigation
+
+***********************/
+
+    .nav-disclosure {
+        display: flex;
+        list-style-type: none;
+    }
+
+    .nav-disclosure svg {
+        pointer-events: none;
+    }
+
+    .sjsuDisclosurePanel {
+        background-color:#fff;
+        display: block;
+        list-style-type: none;
+        min-width: 200px;
+        position: absolute;
+        top: 100%;
+    }
+
+    .nav-disclosure > li {
+        display: flex;
+        position: relative;
+    }
+
+    
+    
+    
+/*
+Unnecessary now that the main thing is buttons instead of links
+.nav-site li:first-child a {
+    margin-inline-start: calc(-1 * var(--padding));
+}
+
+.nav-site li:last-child a {
+    margin-inline-end: calc(-1 * var(--padding));
+}
+*/
+
+/*
+This should be controlled using the theme class, otherwise it has to get re-declared with every theme variation on each affected element. -b 5.29
+.nav-site a:hover, .nav-site a:focus {
+    --background-color: var(--sjsu-color-blue);
+    --text-color: var(--color-white);
+    --link-color: var(--color-white);
+}
+*/
+
+.sjsu-contact-region > * {
+    --background-color:transparent;
+}
+
+.sjsu-contact-region p {
+    --font-size: var(--step--1);
+}
+
+.title-page {
+    --font-size:var(--step-4);
+}
+
+.title-parent-org {
+    --font-size: var(--step-0);
+}
+
+.title-site {
+    --font-size: var(--step-2);
+    font-weight: normal;
+}
+
+.title-global {
+    --font-size: var(--step-0);
+    font-family: var(--sjsu-font-spartan);
+    line-height:1.50;
+    /* margin-block: var(--sjsu-vr-half); */
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+.title-page {
+    margin-block-end: 2rem;
+}
+
+}
+
+@layer ugc {
+    .sjsu-ugc {
+        margin-block: var(--sjsu-vr);
+    }
+
+    .sjsu-ugc p {
+        margin-block-end: var(--font-size);
+    }
+
+    .sjsu-ugc h1,
+    .sjsu-ugc h2,
+    .sjsu-ugc h3,
+    .sjsu-ugc h4,
+    .sjsu-ugc h5,
+    .sjsu-ugc h6 {
+        margin-block-end: calc(.5 * var(--font-size));
+    }
+}
+
+@layer utilities {
+/* "sr-only" isn't the most appropriate name since sr != accessibility tools */
+    .visually-hidden:not(:focus):not(:active) {
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0); /* for IE only */
+        clip-path: inset(50%);
+        position: absolute;
+        white-space: nowrap;
+    }
+
+/* This class will limit text content to the value of the "line-clamp" property */
+    .line-limit {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .padding-half {
+        padding-block: var(--sjsu-vr-half);
+    }
+
+    .padding-quarter {
+        padding-block: var(--sjsu-vr-quarter);
+    }
+
+
+    /* overlap with newer visually-hidden. refactor here. these declarations impair interactive elements -b 1/13/25 */
+    .show-for-sr,
+    .show-on-focus {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0; }    
+    
+.u-bg-diamonds {
+    background:	linear-gradient(rgba(255,255,255,1),rgba(255,255,255,0)), url('https://www.sjsu.edu/aspis/media/bgs/bg-sjsu-diamonds.svg') repeat #ffffff; 
+}
+
+.u-bg-white {
+    --background-color: white;
+}
+    
+.u-fill-sjsu-gold {
+    --fill-color: var(--sjsu-color-gold);
+}
+
+.u-fill-sjsu-blue {
+    --fill-color: var(--sjsu-color-blue);
+}
+
+.u-fill-sjsu-normal-gray {
+    --fill-color: var(--sjsu-color-normal-gray);
+}
+
+.u-fill-white {
+    --fill-color: white;
+}
+
+.u-flex-reverse {
+    flex-direction:row-reverse;
+}
+
+.u-flex-center {
+    align-self: center;
+}
+
+}
+
+@layer states {
+
+    /* refactor mq per https://propjockey.github.io/css-media-vars/ -b 2/13/25 */
+
+    @media only screen and (max-width:509px) {
+        .sjsu-footerlinks :is(p,li,h1,h2,h3,h4,h5,h6) {
+            --text-align:center;            
+        }
+    }
+
+    @media only screen and (max-width:1009px) {
+        .sjsu-footeraddress {
+            margin-block-start: 3rem;
+        }
+    }
+
+    @media only screen and (max-width: 767px) {
+        .container {
+            --container-margins: 2rem;
+        }
+    }
+
+    @media only screen and (max-width:625px) {
+        .u-gap-control {
+            --gap: 3rem;
+        }
+    }
+
+    @media only screen and (min-width:675px) and (max-width:768px) {
+        .u-gap-control {
+            --gap: 1rem;
+        }
+    }
+
+    @media only screen and (min-width:769px) {
+        .u-gap-control {
+            --gap: 2rem;
+        }
+    }
+
+
+    @media only screen and (min-width:820px) and (max-width: 898px) {
+        .u-gap-control {
+            --gap: 3rem;
+        }      
+    }
+
+    @media only screen and (min-width:899px) and (max-width: 1009px) {
+        .u-gap-control {
+            --gap: 6rem;
+        }
+    }
+
+
+    @media only screen and (min-width:1010px) and (max-width: 1045px) {
+        .u-gap-control {
+            --gap: 1rem;
+        }
+    }    
+
+    @media only screen and (min-width: 1046px) {
+        .u-gap-control {
+            --gap: 2rem;
+        }
+    }
+
+    @media only screen and (min-width: 1200px) {
+        .u-gap-control {
+            --gap: 4rem;
+        }
+    }
+
+    @media only screen and (min-width: 1280px) {
+        .u-gap-control {
+            --gap: 6rem;
+        }
+    }    
+}
+
+@layer overrides {
+    /* TK */
+}

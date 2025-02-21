@@ -1,0 +1,562 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sjsu front-end refactor</title>
+    <meta name="Description" content="A demo repo for a redesign of SJSU's main web template">
+
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:600" rel="stylesheet" />
+
+    <script src="js/layout-primitives.js" type="module">//</script>
+
+    <!--
+    PSU CDN fine for testing/dev, will need to compile local version later
+    https://webcomponents.psu.edu/?path=/story/about-getting-started--using-your-own-copy
+    <script>
+        window.__appCDN =
+            "https://cdn.webcomponents.psu.edu/cdn/";
+        window.__appForceUpgrade = false;
+    </script>
+    <script src="https://cdn.webcomponents.psu.edu/cdn/build.js">
+    </script>
+    -->
+</head>
+
+<body>
+    <header>
+        <stack-l space="0">
+            <div class="sjsu-theme-blue">
+                <div class="container padding-half">
+                    <cluster-l justify="space-between">
+                        <a class="title-global" href="#">San José State University</a>
+                        <cluster-l justify="flex-start">
+                            <button id="buttonToggleMenu" type="button" class="button borderless icon sjsuBtnPanel">
+                                <icon-l>
+                                    <svg id="hamburger" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 100 100">
+                                        <polygon id="top" points="0,25 100,25 100,40 0,40"/>
+                                        <polygon id="mid" points="0,55 100,55 100,70 0,70"/>
+                                        <polygon id="bot" points="0,85 100,85 100,100 0,100"/>
+                                    </svg>
+                                    Menu
+                                </icon-l>
+                            </button>
+                            <button id="buttonToggleSearch" type="button" class="button borderless icon sjsuBtnPanel">
+                                <icon-l>
+                                    <svg viewBox="0 0 20 20" width="20" height="20">
+                                        <path d="m13.94 12.45 5.9 5.9-1.56 1.57-5.91-5.9a7.75 7.75 0 1 1 1.57-1.56Zm-6.19.98a5.65 5.65 0 1 0 0-11.29 5.65 5.65 0 0 0 0 11.3Z" />
+                                    </svg>
+                                    Search
+                                </icon-l>
+                            </button>
+                        </cluster-l>
+                    </cluster-l>
+                    <div id="panelSearch" class="visually-hidden">
+                        <cluster-l>
+                            <label id="global-search" class="visually-hidden">Search SJSU</label>
+                            <input aria-labelledby="#global-search" type="text" />
+                            <button id="search">Search</button>
+                        </cluster-l>
+                    </div>
+                    <div id="panelMainMenu" class="visually-hidden">
+                        <cluster-l>
+                            <ul>
+                                <li><a class="gtm-nav--global" href="https://www.sjsu.edu/soar/services/campus-tours.php">Campus Tours</a></li>
+                                <li><a class="gtm-nav--global" href="http://www.sjsu.edu/map">Maps</a></li>
+                                <li><a class="gtm-nav--global" href="https://www.sjsu.edu/parking/">Parking</a></li>
+                                <li><a class="gtm-nav--global" href="https://www.sjsu.edu/visit/silicon-valley.php">Silicon Valley</a></li>
+                                <li><a class="gtm-nav--global" href="https://hammertheatre.com/">Hammer Theatre</a></li>
+                                <li><a class="gtm-nav--global" href="https://www.sjsu.edu/sjsulovessj/">SJSU Loves SJ</a></li>
+                            </ul>
+                        </cluster-l>
+                    </div>
+                </div>
+            </div>
+            <div class="sjsu-theme-light-gray">
+                <nav aria-label="breadcrumb" class="breadcrumb container padding-quarter">
+                    <cluster-l role="list" space="0"><!-- should probably revert this to a ul for semantic and a11y simplicity, but incorporate a css class that emulates some of the layout functionality we gained from the custom component. might need to break away from the built-in component in order to create one that's flexible so that it has the desired behavior on mobile v desktop. -b 1/13/25-->
+                        <a role="listitem" href="https://www.sjsu.edu/">Home</a>
+                        <a role="listitem" href="https://www.sjsu.edu/migration/">Migration</a>
+                        <a role="listitem" href="https://www.sjsu.edu/migration/showcase/">Showcase</a>
+                        <a role="listitem" aria-current="page">Landing Page Components</a>
+                    </cluster-l>
+                </nav>
+            </div>
+            <div class="sjsu-theme-default">
+                <stack-l class="container padding-half" space="0">
+                    <a class="title-site" href="#">Digital Governance</a>
+                    <p><a class="title-parent-org" href="#">University Marketing &amp; Communications</a> and
+                        <a class="title-parent-org" href="#">Information Technology</a>
+                    </p>
+                </stack-l>
+            </div>
+
+
+<!--
+angle bracket svg
+<svg width="11px" height="7px" viewBox="0 0 11 7">
+    <polygon id="Shape" transform="translate(5.500000, 3.457143) rotate(90.000000) translate(-5.500000, -3.457143) " points="2.35714286 -0.398095264 3.54633243 -1.57142857 8.64285714 3.45714286 3.54633243 8.48571429 2.35714286 7.31238098 6.26447879 3.45714286"></polygon>
+</svg>
+
+-->
+
+    <nav aria-label="site navigation" class="nav-site container">
+        <ul class="nav-disclosure">
+            <li>
+                <a href="/communications/about/index.php" class="sjsuDisclosureLink">About Us</a>
+                <button type="button" aria-expanded="false" aria-controls="id_about_panel" aria-label="More About Us pages" class="button sjsuDisclosureControl" >
+                    <svg width="14px" height="9px" viewBox="0 0 11 7">
+                            <polygon id="angle-bracket" transform="translate(5.500000, 3.457143) rotate(90.000000) translate(-5.500000, -3.457143) " points="2.35714286 -0.398095264 3.54633243 -1.57142857 8.64285714 3.45714286 3.54633243 8.48571429 2.35714286 7.31238098 6.26447879 3.45714286"></polygon>
+                    </svg>
+                </button>
+                <div id="id_about_panel" class="sjsuDisclosurePanel" style="display:none;">
+                    <ul>
+                        <li><a href="/communications/about/meet-the-team.php">Meet the Team</a></li>
+                        <li><a href="/communications/about/what-we-do.php">What We Do</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <a href="/communications/brand/index.php" class="sjsuDisclosureLink">Brand Guide</a>
+                <button type="button" aria-expanded="false" aria-controls="id_brand_panel" aria-label="More Brand Guide pages" class="button sjsuDisclosureControl" >
+                    <svg width="14px" height="9px" viewBox="0 0 11 7">
+                        <polygon id="angle-bracket" transform="translate(5.500000, 3.457143) rotate(90.000000) translate(-5.500000, -3.457143) " points="2.35714286 -0.398095264 3.54633243 -1.57142857 8.64285714 3.45714286 3.54633243 8.48571429 2.35714286 7.31238098 6.26447879 3.45714286"></polygon>
+                    </svg>
+                </button>
+                <div id="id_brand_panel" class="sjsuDisclosurePanel" style="display:none;">
+                    <ul>
+                        <li><a href="/communications/brand/about-the-brand/index.php">About the Brand</a></li>
+                        <li><a href="/communications/brand/editorial/index.php">Editorial Style</a></li>
+                        <li><a href="/communications/brand/visual-style/index.php">Visual Style</a></li>
+                        <li><a href="/communications/brand/digital-communications/index.php">Digital Communications</a></li>
+                        <li><a href="/communications/brand/sjsuonline-brand.php">SJSU Online Brand</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <a href="/communications/help/index.php" class="sjsuDisclosureLink">Self-Service Portal &amp; Resources</a>
+                <button type="button" aria-expanded="false" aria-controls="id_self-service_panel" aria-label="More Self-Service Portal &amp; Resources pages" class="button sjsuDisclosureControl" >
+                    <svg width="14px" height="9px" viewBox="0 0 11 7">
+                        <polygon id="angle-bracket" transform="translate(5.500000, 3.457143) rotate(90.000000) translate(-5.500000, -3.457143) " points="2.35714286 -0.398095264 3.54633243 -1.57142857 8.64285714 3.45714286 3.54633243 8.48571429 2.35714286 7.31238098 6.26447879 3.45714286"></polygon>
+                    </svg>
+                </button>
+                <div id="id_self-service_panel" class="sjsuDisclosurePanel" style="display:none;">
+                    <ul>
+                        <li><a href="/communications/help/templates-and-toolkits/index.php">Templates and Toolkits</a></li>
+                        <li><a href="/communications/help/send-a-request/index.php">Request Identity Assets</a></li>
+                        <li><a href="/communications/help/using-sjsu-name-identity.php">Brand Permissions</a></li>
+                        <li><a href="/communications/help/livestreamrequest.php">Livestream Request</a></li>
+                        <li><a href="/communications/help/permits-and-releases/index.php">Film/Photo Permits &amp; Releases</a></li>
+                        <li><a href="/communications/help/photo-request.php">Photography Request</a></li>
+                        <li><a href="/communications/help/web-ux-request.php">Web &amp; UX Requests</a></li>
+                        <li><a href="/communications/help/project-request.php">Formal Project Request</a></li>
+                        <li><a href="/communications/help/communicators-network.php">SJSU Communicators Network</a></li>
+                        <li><a href="/communications/help/faculty-expert.php">Become a Faculty Expert</a></li>
+                        <li><a href="/communications/help/faqs.php">Frequently Asked Questions</a></li>
+                    </ul>
+                </div>
+            </li>            
+        </ul>
+    </nav>
+
+
+        </stack-l>
+    </header>
+
+    <main>
+        <div class="container sjsu-theme-default">
+            <sidebar-l side="right" contentMin="66%" sideWidth="30%" space="var(--s1)" isReversed="true" noStretch="true">
+                <stack-l>
+                    <div class="sjsu-ugc">
+                        <h1 class="title-page">Accessibility</h1>
+                        <h2>What is it?</h2>
+
+                        <p>Accessibility is making sure that our website can be used by people with disabilities.</p>
+
+                        <h2>Why is it important?</h2>
+
+                        <p>SJSU's mission:</p>
+
+                        <blockquote>
+
+                            <p>To enrich the lives of its students, to transmit knowledge to its students along with
+                                the necessary skills for applying it in the service of our society, and to expand
+                                the base of knowledge through research and scholarship.</p>
+                        </blockquote>
+
+                        <p>The United States Center for Disease Control estimates that one-in-five people in
+                            the US has a disability of some kind. But accessibility issues aren't limited to life-long
+                            conditions: someone being born blind, deaf, colorblind, or with a significant physical
+                            impairment. A broken arm, cataracts, diabetes, nerve damage, and even the normal aging
+                            process - all of these situations can lead to difficulties interacting with hardware,
+                            software, and then information presented on web sites.</p>
+
+                        <p>For example, if a student can't read a class handout or register for an advising appointment
+                            on a website, we won't be transmitting any knowledge. We won't be enriching their
+                            life, but rather worsening it.</p>
+
+                        <h2>What should I do?</h2>
+
+                        <p>While our web templates handle a lot of the heavy lifting, content creators still
+                            need to make sure that the content they publish to SJSU.edu meets accessibility standards.
+                            There are four key areas that need attention:</p>
+
+                        <ul>
+
+                            <li><a href="/digital/guidelines/accessibility/media.php">images and media</a></li>
+
+                            <li><a href="/digital/guidelines/accessibility/structure.php">heading elements</a></li>
+
+                            <li><a href="/digital/guidelines/accessibility/links.php">hyperlinks</a></li>
+
+                            <li><a href="/digital/guidelines/accessibility/text-formatting.php">text formatting</a></li>
+
+                            <li><a href="/digital/guidelines/accessibility/tables.php">tables</a></li>
+
+                            <li><a href="/digital/guidelines/accessibility/pdfs.php">pdfs and other documents</a></li>
+                        </ul>
+                    </div>
+                </stack-l>
+                <nav class="nav-local">
+                    <ul class="vertical linklist">
+                        <li><a href="/migration/process.php" class="gtm-nav-site">About</a></li>
+                        <li><a href="/migration/get-help.php" class="gtm-nav-site" aria-current="page">Oversight</a>
+                            <ul class="vertical linklist nested">
+                                <li><a href="/migration/getting-ready/index.php" class="gtm-nav-site">Requesting Sites</a></li>
+                                <li><a href="/migration/going/index.php" class="gtm-nav-site">Maintenance</a></li>
+                                <li><a href="/migration/coming-back/index.php" class="gtm-nav-site">Tech Support</a></li>
+                                <li><a href="/migration/coming-back/index.php" class="gtm-nav-site">Auditing</a></li>
+                                <li><a href="/migration/coming-back/index.php" class="gtm-nav-site">Archiving Sites</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/migration/process.php" class="gtm-nav-site">Processes</a></li>
+                        <li><a href="/migration/showcase/index.php" class="gtm-nav-site">Content Guidelines</a></li>
+                    </ul>
+                </nav>
+            </sidebar-l>
+        </div>
+    </main>
+
+    <aside class="sjsu-theme-default sjsu-contact-region u-bg-diamonds">
+        <div class="container">
+            <stack-l>
+                <h2 class="title-footer">Sitename or Parent Organization</h2>
+                <cluster-l>
+                    <a href="http://www.instagram.com/sjsu" class="sjsu-social-link-icon">
+
+
+                        <svg width="29" height="28" viewBox="0 0 29 28">
+                            <title>SJSU on Instagram</title>
+                            <g>
+                                <path d="M21.1 27.9L7.9 27.9C3.5 27.9 0.1 24.5 0.1 20.4L0.1 7.6C0.1 3.5 3.6 0.1 7.9 0.1L21 0.1C25.4 0.1 28.8 3.5 28.8 7.6L28.8 20.3C28.9 24.5 25.4 27.9 21.1 27.9ZM7.9 2.4C4.9 2.4 2.5 4.7 2.5 7.6L2.5 20.3C2.5 23.2 4.9 25.5 7.9 25.5L21 25.5C24 25.5 26.4 23.2 26.4 20.3L26.4 7.6C26.4 4.7 24 2.4 21 2.4L7.9 2.4Z" />
+                                <path d="M14.5 20.9C10.5 20.9 7.3 17.9 7.3 14 7.3 10.1 10.5 7.1 14.5 7.1 18.5 7.1 21.7 10.1 21.7 14 21.7 17.9 18.5 20.9 14.5 20.9ZM14.5 9.4C11.9 9.4 9.7 11.5 9.7 14 9.7 16.5 11.9 18.6 14.5 18.6 17.1 18.6 19.3 16.5 19.3 14 19.3 11.5 17.1 9.4 14.5 9.4Z" />
+                                <ellipse cx="22.1" cy="6.6" rx="1.7" ry="1.7" />
+                            </g>
+
+                        </svg>
+
+                    </a>
+
+
+                    <a href="http://www.linkedin.com/company/san-jose-state-university" class="sjsu-social-link-icon">
+
+                        <svg width="27" height="28" viewBox="0 0 27 28">
+                            <title>SJSU on LinkedIn</title>
+                            <g>
+                                <rect y="7.4" width="5.9" height="20.1" />
+                                <path d="M20.3 7.4C16.2 7.4 15.5 8.9 15.2 10.3L15.2 7.4 9.3 7.4 9.3 27.5 15.2 27.5 15.2 16C15.2 14.1 16.2 13.1 18.1 13.1 20 13.1 21.1 14.1 21.1 16L21.1 27.5 27 27.5 27 17.5C27 11.7 26.2 7.4 20.3 7.4Z" />
+                                <ellipse cx="3" cy="2.9" rx="3" ry="2.9" />
+                            </g>
+                        </svg>
+
+                    </a>
+                    <a href="https://twitter.com/sjsu" class="sjsu-social-link-icon">
+
+
+                        <svg width="30" height="30" viewBox="0 0 16 16">
+                            <g>
+                                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
+                            </g>
+                        </svg>
+
+                    </a>
+                </cluster-l>
+                <sidebar-l side="left" sideWidth="40%" contentMin="50%">
+                    <box-l>
+                        <!-- spacer -->
+                    </box-l>
+                    <grid-l class="u-bg-white u-fill-sjsu-normal-gray">
+                        <box-l>
+                            <sidebar-l>
+                                <svg width="33" height="33" viewBox="0 0 18 18">
+                                    <g transform="translate(0, -129.000000)">
+                                        <path d="M1,129 C0.447,129 0,129.447 0,130 C0,139.388 7.612,147 17,147 C17.553,147 18,146.553 18,146 L18,142.5 C18,141.948 17.553,141.501 17,141.501 C15.752,141.501 14.552,141.3 13.428,140.932 C13.328,140.9 13.223,140.884 13.119,140.884 C12.864,140.884 12.608,140.982 12.413,141.177 L10.212,143.38 C7.38,141.94 5.065,139.625 3.623,136.794 L5.823,134.587 C6.098,134.313 6.179,133.918 6.068,133.572 C5.7,132.447 5.499,131.247 5.499,130 C5.499,129.447 5.052,129 4.5,129 L1,129 Z"></path>
+                                    </g>
+                                </svg>
+                                <stack-l>
+                                    <h3>Contact Us</h3>
+                                    <p>408-924-1000</p>
+                                    <p>contact@sjsu.edu</p>
+                                </stack-l>
+                            </sidebar-l>
+                        </box-l>
+                        <box-l>
+                            <sidebar-l>
+                                <svg width="27px" height="40px" viewBox="0 0 27 40">
+                                    <g>
+                                        <path d="M13.5,0 C6.03642857,0 0,6.26 0,14 C0,24.5 13.5,40 13.5,40 C13.5,40 27,24.5 27,14 C27,6.26 20.9635714,0 13.5,0 L13.5,0 Z M13.5,19 C10.8385714,19 8.67857143,16.76 8.67857143,14 C8.67857143,11.24 10.8385714,9 13.5,9 C16.1614286,9 18.3214286,11.24 18.3214286,14 C18.3214286,16.76 16.1614286,19 13.5,19 L13.5,19 Z"></path>
+                                    </g>
+                                </svg>
+                                <stack-l>
+                                    <h3>Visit Office</h3>
+                                    <p>
+                                        One Washington Square<br />San Jose, CA 95192
+                                    </p>
+                                </stack-l>
+                            </sidebar-l>
+                        </box-l>
+                        <box-l>
+                            <sidebar-l>
+                                <svg width="33px" height="33px" viewBox="0 0 30 30">
+
+                                    <g>
+                                        <path d="M23.0764615,1.67540501 C25.4442838,6.62367864 15.4047169,5.82842038 15.0258653,5.03316212 C14.5523008,4.23790386 20.7086391,-3.27286861 23.0764615,1.67540501 Z"></path>
+                                        <path d="M6.91715879,1.67540501 C4.57231248,6.62367864 14.6082547,5.82842038 14.9834301,5.03316212 C15.3586055,4.23790386 9.2620051,-3.27286861 6.91715879,1.67540501 Z"></path>
+                                        <path d="M27.4957192,7.5 L15.9375,7.5 L15.9375,15 L27.4957192,15 C28.8441781,15 30,13.9285714 30,12.6623377 L30,9.83766234 C30,8.47402597 28.9404966,7.5 27.4957192,7.5 Z"></path>
+                                        <path d="M2.50428082,7.5 L14.0625,7.5 L14.0625,15 L2.50428082,15 C1.05950342,15 0,13.9285714 0,12.6623377 L0,9.83766234 C0,8.47402597 1.05950342,7.5 2.50428082,7.5 Z"></path>
+                                        <path d="M15.9375,16.875 L15.9375,29.0625 L24.7179878,29.0625 C26.089939,29.0625 27.1875,28.2439366 27.1875,27.1525187 L27.1875,16.875 L15.9375,16.875 Z"></path>
+                                        <path d="M14.1176471,16.875 L14.1176471,29.0625 L5.16499283,29.0625 C3.7661406,29.0625 2.64705882,28.2439366 2.64705882,27.1525187 L2.64705882,16.875 L14.1176471,16.875 Z"></path>
+                                    </g>
+
+                                </svg>
+                                <stack-l>
+                                    <h3>Make a gift</h3>
+                                    <p><a href="#">Give to SJSU</a></p>
+                                </stack-l>
+                            </sidebar-l>
+                        </box-l>
+                        <box-l>
+                            <sidebar-l>
+                                <svg width="33px" height="33px" viewBox="0 0 33 23">
+                                    <g>
+                                        <mask id="mask-2" fill="white">
+                                            <polygon id="path-1" points="0 0.984 32.7059118 0.984 32.7059118 23.9999 0 23.9999"></polygon>
+                                        </mask>
+                                        <path d="M30.1409382,23.9999 L2.56458529,23.9999 C1.14849706,23.9999 -0.000679411765,22.8169 -0.000679411765,21.3579 L-0.000679411765,3.6259 C-0.000679411765,2.1669 1.14849706,0.9839 2.56458529,0.9839 L30.1409382,0.9839 C31.5570265,0.9839 32.7062029,2.1669 32.7062029,3.6259 L32.7062029,21.3579 C32.7062029,22.8169 31.5570265,23.9999 30.1409382,23.9999" mask="url(#mask-2)"></path>
+                                    </g>
+                                    <path d="M20.8729853,12.6808 L30.0790147,4.3078 C30.4808382,3.9418 30.5186912,3.3098 30.1644265,2.8958 C29.8082206,2.4828 29.1957794,2.4428 28.7939559,2.8078 L16.3529559,14.1228 L3.91098529,2.8078 C3.50916176,2.4428 2.89672059,2.4828 2.54051471,2.8958 C2.18625,3.3098 2.22410294,3.9418 2.62592647,4.3078 L11.8329265,12.6808 L2.62592647,21.0538 C2.22410294,21.4198 2.18625,22.0518 2.54051471,22.4658 C2.73366176,22.6898 3.00057353,22.8038 3.26845588,22.8038 C3.49751471,22.8038 3.72657353,22.7218 3.91098529,22.5538 L13.2994853,14.0158 L15.7104265,16.2068 C15.7618676,16.2548 15.8239853,16.2798 15.8822206,16.3138 C15.9191029,16.3338 15.9491912,16.3628 15.9870441,16.3778 C16.1054559,16.4278 16.22775,16.4568 16.3529559,16.4568 C16.4781618,16.4568 16.6004559,16.4278 16.7188676,16.3778 C16.7567206,16.3628 16.7868088,16.3338 16.8227206,16.3138 C16.8819265,16.2798 16.9430735,16.2548 16.9954853,16.2068 L19.4054559,14.0158 L28.7939559,22.5538 C28.9793382,22.7218 29.2083971,22.8038 29.4364853,22.8038 C29.7053382,22.8038 29.97225,22.6898 30.1644265,22.4658 C30.5186912,22.0518 30.4808382,21.4198 30.0790147,21.0538 L20.8729853,12.6808 Z" fill="#fefefe"></path>
+
+
+
+                                </svg>
+                                <stack-l>
+                                    <h3>Subscribe</h3>
+                                    <p><a href="#">Sign up for our newsletter</a></p>
+                                </stack-l>
+                            </sidebar-l>
+                        </box-l>
+                        <box-l>
+                            <sidebar-l>
+                                <svg width="36px" height="37px" viewBox="0 0 36 37">
+                                    <g>
+                                        <path d="M27.4319418,10.2574167 C25.8320108,8.65482759 25.8320108,6.05809852 27.4319418,4.45550936 L23.8975949,0.918102463 L0.952955984,23.8838798 L4.48730284,27.4212867 C6.08723387,25.8199704 8.68298844,25.8199704 10.2829195,27.4212867 C11.8828505,29.022603 11.8828505,31.6206049 10.2829195,33.2219212 L13.8172663,36.7593281 L36.7631771,13.7948236 L33.2288302,10.2574167 C31.6276274,11.858733 29.0331446,11.858733 27.4319418,10.2574167"></path>
+                                        <path d="M17.5474914,25.8323418 C17.4270145,25.9520025 17.2338836,25.9520025 17.1143264,25.8323418 L11.8703627,20.5847583 C11.7508055,20.4641771 11.7508055,20.270879 11.8703627,20.1512183 L20.1685536,11.8458428 C20.2881108,11.7252616 20.4821614,11.7252616 20.6017186,11.8458428 L25.8447627,17.0934262 C25.9652395,17.213087 25.9652395,17.4073056 25.8447627,17.5269663 L17.5474914,25.8323418 Z" fill="#ffffff"></path>
+                                    </g>
+                                </svg>
+                                <stack-l>
+                                    <h3>Get tickets</h3>
+                                    <p><a href="#">Purchase tickets to the event</a></p>
+                                </stack-l>
+                            </sidebar-l>
+                        </box-l>
+                    </grid-l>
+
+                </sidebar-l>
+            </stack-l>
+        </div>
+        </div>
+    </aside>
+
+    <img class="o-coin" src="https://www.sjsu.edu/aspis/media/brand/icon-spartan-withbackground.svg" alt="" />
+
+    <footer class="sjsu-theme-blue wrap bg-diamonds" role="contentinfo">
+        <div class="container">
+            <h2 class="show-for-sr">Footer</h2>
+
+            <stack-l>
+                <p class="u-flex-center">San Jos&eacute; State University</p>
+                <cluster-l class="u-flex-center u-fill-sjsu-gold">
+
+                    <a href="http://www.facebook.com/sanjosestate" class="sjsu-social-link-icon">
+                        <svg width="16" height="30" viewBox="0 0 16 30">
+                            <title>SJSU on Facebook</title>
+                            <g>
+                                <path d="M10.2 29.7L10.2 16.7 14.6 16.7 15.6 11.2 10.1 11.2 10.1 9C10.1 6.8 11.2 5.7 13.4 5.7L15.6 5.7 15.6 0.3C14.6 0.3 13.2 0.3 11.3 0.3 7.3 0.3 4.7 3.4 4.7 7.9L4.7 11.2 0.3 11.2 0.3 16.7 4.6 16.7 4.6 29.7 10.2 29.7Z" />
+                            </g>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/sjsu" class="sjsu-social-link-icon">
+
+                        <svg width="30" height="30" viewBox="0 0 16 16">
+                            <g>
+                                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
+                            </g>
+                        </svg>
+
+                    </a>
+                    <a href="http://www.linkedin.com/company/san-jose-state-university" class="sjsu-social-link-icon">
+
+                        <svg width="27" height="28" viewBox="0 0 27 28">
+                            <title>SJSU on LinkedIn</title>
+                            <g>
+                                <rect y="7.4" width="5.9" height="20.1" />
+                                <path d="M20.3 7.4C16.2 7.4 15.5 8.9 15.2 10.3L15.2 7.4 9.3 7.4 9.3 27.5 15.2 27.5 15.2 16C15.2 14.1 16.2 13.1 18.1 13.1 20 13.1 21.1 14.1 21.1 16L21.1 27.5 27 27.5 27 17.5C27 11.7 26.2 7.4 20.3 7.4Z" />
+                                <ellipse cx="3" cy="2.9" rx="3" ry="2.9" />
+                            </g>
+                        </svg>
+
+                    </a>
+                    <a href="http://www.instagram.com/sjsu" class="sjsu-social-link-icon">
+                        <svg width="29" height="28" viewBox="0 0 29 28">
+                            <title>SJSU on Instagram</title>
+                            <g>
+                                <path d="M21.1 27.9L7.9 27.9C3.5 27.9 0.1 24.5 0.1 20.4L0.1 7.6C0.1 3.5 3.6 0.1 7.9 0.1L21 0.1C25.4 0.1 28.8 3.5 28.8 7.6L28.8 20.3C28.9 24.5 25.4 27.9 21.1 27.9ZM7.9 2.4C4.9 2.4 2.5 4.7 2.5 7.6L2.5 20.3C2.5 23.2 4.9 25.5 7.9 25.5L21 25.5C24 25.5 26.4 23.2 26.4 20.3L26.4 7.6C26.4 4.7 24 2.4 21 2.4L7.9 2.4Z" />
+                                <path d="M14.5 20.9C10.5 20.9 7.3 17.9 7.3 14 7.3 10.1 10.5 7.1 14.5 7.1 18.5 7.1 21.7 10.1 21.7 14 21.7 17.9 18.5 20.9 14.5 20.9ZM14.5 9.4C11.9 9.4 9.7 11.5 9.7 14 9.7 16.5 11.9 18.6 14.5 18.6 17.1 18.6 19.3 16.5 19.3 14 19.3 11.5 17.1 9.4 14.5 9.4Z" />
+                                <ellipse cx="22.1" cy="6.6" rx="1.7" ry="1.7" />
+                            </g>
+
+                        </svg>
+
+                    </a>
+                    <a href="http://www.youtube.com/user/sjsu" class="sjsu-social-link-icon">
+
+                        <svg width="38" height="28" viewBox="0 0 38 28">
+                            <title>SJSU on YouTube</title>
+                            <g>
+                                <path d="M37.6 6.1C37.6 6.1 38.1 9.3 38 12.6L38 15.5C38 18.7 37.6 21.9 37.6 21.9 37.6 21.9 37.3 24.7 36.2 25.9 34.7 27.4 33.1 27.4 32.3 27.6 27 28 19 28 19 28 19 28 9 27.9 6 27.4 5.2 27.3 3.3 27.3 1.8 25.8 0.7 24.6 0.3 21.8 0.3 21.8 0.3 21.8 0 18.6 0 15.4L0 12.5C0 9.3 0.3 6.1 0.3 6.1 0.3 6.1 0.7 3.3 1.8 2.1 3.3 0.6 4.9 0.6 5.7 0.4 11 0 19 0 19 0 19 0 27 0 32.3 0.4 33.1 0.6 34.7 0.6 36.2 2.1 37.3 3.3 37.6 6.1 37.6 6.1ZM14.8 7.3L14.8 20.7 26.4 14 14.8 7.3Z" />
+                            </g>
+                        </svg>
+
+                    </a>
+                </cluster-l>
+
+                <cluster-l justify="space-around" isReversed="true" class="u-flex-reverse">
+                    <stack-l>
+                        <ul class="linklist horizontal">
+                            <li><a href="https://www.sjsu.edu/accessibility/index.php" class="gtm-footer--link">Accessibility</a></li>
+                            <li><a href="https://www.sjsu.edu/aiie/accreditation/index.php" class="gtm-footer--link">Accreditation</a></li>
+                            <li><a href="https://www.sjsu.edu/titleixeo/index.php" class="gtm-footer--link">Title IX</a></li>
+                            <li><a href="https://www.sjsu.edu/diversity/index.php" class="gtm-footer--link">Diversity</a></li>
+                            <li><a href="https://www.sjsu.edu/diversity/land-acknowledgement/" class="gtm-footer--link">Land Acknowledgement</a></li>
+                            <li><a href="https://www.sjsu.edu/privacy/" class="gtm-footer--link">Privacy</a></li>
+                        </ul>
+                        <hr />
+                        <cluster-l justify="space-around" space="var(--gap)" class="u-gap-control sjsu-footerlinks">
+                            <stack-l>
+
+                                <h3>Colleges</h3>
+                                <ul class="vertical linklist">
+                                    <li><a href="https://www.sjsu.edu/cob/index.php" class="gtm-footer--link">Business</a></li>
+                                    <li><a href="https://www.sjsu.edu/education/index.php" class="gtm-footer--link">Education</a></li>
+                                    <li><a href="https://www.sjsu.edu/engineering/index.php" class="gtm-footer--link">Engineering</a></li>
+                                    <li><a href="https://www.sjsu.edu/cgs/index.php" class="gtm-footer--link">Graduate Studies</a></li>
+                                    <li><a href="https://www.sjsu.edu/chhs/index.php" class="gtm-footer--link">Health and Human Sciences</a></li>
+                                    <li><a href="https://www.sjsu.edu/humanitiesandarts/index.php" class="gtm-footer--link">Humanities and the Arts</a></li>
+                                    <li><a href="https://www.sjsu.edu/information-data-society/index.php" class="gtm-footer--link">Information, Data and Society</a></li>
+                                    <li><a href="https://sjsu.edu/professional/" class="gtm-footer--link">Professional Education</a></li>
+                                    <li><a href="https://www.sjsu.edu/science/index.php" class="gtm-footer--link">Science</a></li>
+                                    <li><a href="https://www.sjsu.edu/socialsciences/index.php" class="gtm-footer--link">Social Science</a></li>
+                                </ul>
+
+                            </stack-l>
+                            <stack-l>
+
+                                <h3>Resources</h3>
+                                <ul class="vertical linklist">
+                                    <li><a href="https://www.sjsu.edu/siteindex" class="gtm-footer--link">A-Z Index</a></li>
+                                    <li><a href="https://www.sjsu.edu/clery/docs/SJSU-Annual-Security-Report.pdf" class="gtm-footer--link">Annual Security Report [pdf]</a></li>
+                                    <li><a href="https://www.spartanbookstore.com/" class="gtm-footer--link">Bookstore</a></li>
+                                    <li><a href="https://www.sjsu.edu/classes/calendar/index.php" class="gtm-footer--link">Calendars</a></li>
+                                    <li><a href="https://www.sjsu.edu/careers/index.php" class="gtm-footer--link">Careers and Jobs</a></li>
+                                    <li><a href="https://catalog.sjsu.edu/index.php" class="gtm-footer--link">Catalog</a></li>
+                                    <li><a href="https://www.sjsu.edu/students/" class="gtm-footer--link">Current Students</a></li>
+                                    <li><a href="https://www.sjsu.edu/sjsucares/get-assistance/" class="gtm-footer--link">Emergency Food &amp; Housing</a></li>
+                                    <li><a href="https://www.sjsu.edu/up/index.php" class="gtm-footer--link">Faculty &amp; Staff</a></li>
+                                    <li><a href="https://www.sjsu.edu/president/priorities-and-initiatives/free-speech/index.php" class="gtm-footer--link">Freedom of Speech</a></li>
+                                    <li><a href="https://library.sjsu.edu/" class="gtm-footer--link">King Library</a></li>
+                                    <li><a href="https://blogs.sjsu.edu/newsroom/" class="gtm-footer--link">NewsCenter</a></li>
+                                    <li><a href="https://www.sjsu.edu/sjsucares/resources/parenting-students.php" class="gtm-footer--link">Parenting Students</a></li>
+                                    <li><a href="https://www.sjsu.edu/parking/index.php" class="gtm-footer--link">Parking and Maps</a></li>
+                                </ul>
+
+                            </stack-l>
+                            <stack-l>
+
+                                <h3>Contact Us</h3>
+                                <ul class="vertical linklist">
+                                    <li><a href="https://www.sjsu.edu/contact/index.php" class="gtm-footer--link">Contact Form</a></li>
+                                    <li><a href="https://directory.sjsu.edu/" class="gtm-footer--link">Directory</a></li>
+                                    <li><a href="https://www.sjsu.edu/about/doing-business-with-sjsu.php" class="gtm-footer--link">Doing Business with SJSU</a></li>
+                                    <li><a href="https://www.sjsu.edu/emergency" class="gtm-footer--link">Emergency Info</a></li>
+                                    <li><a href="https://www.sjsu.edu/up/resources/file-a-complaint.php" class="gtm-footer--link">File a Complaint</a></li>
+                                    <li><a href="https://www.sjsu.edu/titleixeo/make-a-report/index.php" class="gtm-footer--link">Report a Title IX Complaint</a></li>
+                                </ul>
+
+                            </stack-l>
+                        </cluster-l>
+                    </stack-l>
+                    <stack-l class="sjsu-footeraddress u-icon--fill--white">
+                        <p><img width="240" src="https://www.sjsu.edu/aspis/media/brand/logo-sjsu-white.svg" alt="SJSU" /></p>
+
+                        <sidebar-l>
+                            <icon-l>
+                                <svg width="13px" height="20px" viewBox="0 0 27 40">
+                                    <g>
+                                        <path d="M13.5,0 C6.03642857,0 0,6.26 0,14 C0,24.5 13.5,40 13.5,40 C13.5,40 27,24.5 27,14 C27,6.26 20.9635714,0 13.5,0 L13.5,0 Z M13.5,19 C10.8385714,19 8.67857143,16.76 8.67857143,14 C8.67857143,11.24 10.8385714,9 13.5,9 C16.1614286,9 18.3214286,11.24 18.3214286,14 C18.3214286,16.76 16.1614286,19 13.5,19 L13.5,19 Z"></path>
+                                    </g>
+                                </svg>
+                            </icon-l>
+                            <p><a rel="nofollow" class="o-region--footer__university-address u-icon--location u-icon gtm-footer--link" href="https://goo.gl/maps/8PBZPkKH15WVnq396">
+                                    One Washington Square<br />San José, CA 95192</a></p>
+                        </sidebar-l>
+                        <sidebar-l>
+                            <icon-l>
+                                <svg width="22" height="22" viewBox="0 0 18 18">
+                                    <g transform="translate(0, -129.000000)">
+                                        <path d="M1,129 C0.447,129 0,129.447 0,130 C0,139.388 7.612,147 17,147 C17.553,147 18,146.553 18,146 L18,142.5 C18,141.948 17.553,141.501 17,141.501 C15.752,141.501 14.552,141.3 13.428,140.932 C13.328,140.9 13.223,140.884 13.119,140.884 C12.864,140.884 12.608,140.982 12.413,141.177 L10.212,143.38 C7.38,141.94 5.065,139.625 3.623,136.794 L5.823,134.587 C6.098,134.313 6.179,133.918 6.068,133.572 C5.7,132.447 5.499,131.247 5.499,130 C5.499,129.447 5.052,129 4.5,129 L1,129 Z"></path>
+                                    </g>
+                                </svg>
+                            </icon-l>
+                            <p><a href="tel:4089241000" rel="nofollow" class="o-region--footer__university-phone u-icon--phone u-icon gtm-footer--link">408-924-1000</a></p>
+
+                        </sidebar-l>
+                        <sidebar-l>
+                            <icon-l>
+                                <svg viewBox="0 0 461.68 485.11">
+                                    <path d="M389.3,80.11H72.38c-18.59,0-33.66,15.07-33.66,33.66v217.95c0,18.59,15.07,33.66,33.66,33.66h100.08c-.5,7.36-2.71,14.52-6.47,20.89l-5.95,10.08c-2.26,3.82,.5,8.65,4.94,8.65h131.74c4.44,0,7.19-4.83,4.94-8.65l-5.95-10.08c-3.77-6.38-5.98-13.53-6.47-20.89h100.08c18.59,0,33.66-15.07,33.66-33.66V113.77c0-18.59-15.07-33.66-33.66-33.66Zm-2.26,246.46H74.64V118.92H387.04v207.65Z" />
+                                </svg>
+
+                            </icon-l>
+                            <p><a href="{{f:51229640}}" class="gtm-footer--link u-icon u-icon--sjsuonline">SJSU Online</a></p>
+                        </sidebar-l>
+
+                        <p><span id="directedit"> </span></p>
+
+                    </stack-l>
+                </cluster-l>
+
+            </stack-l>
+        </div>
+
+
+        <span class="u-gradientbar--footer"></span>
+    </footer><!-- /#sjsufooter -->
+
+    <script src="js/scripts.js">//</script>
+</body>
+
+</html>
