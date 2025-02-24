@@ -30,7 +30,7 @@
 <body>
     <header>
         <stack-l space="0">
-            <div class="sjsu-theme-blue">
+            <div class="sjsu-theme-blue u-gradientbar-blue-to-gold">
                 <div class="container padding-half">
                     <cluster-l justify="space-between">
                         <a class="title-global" href="#">San José State University</a>
@@ -76,16 +76,25 @@
                     </div>
                 </div>
             </div>
+            <!--
+            USDS guidance on breadcrumbs:
+                - not on homepages / section pages
+                - not when also using side nav (redundant)
+                - helps for complex websites
+            USDS has breadcrumb usability/accessibility guidance: https://designsystem.digital.gov/components/breadcrumb/
+            -->
+<!--
             <div class="sjsu-theme-light-gray">
                 <nav aria-label="breadcrumb" class="breadcrumb container padding-quarter">
-                    <cluster-l role="list" space="0"><!-- should probably revert this to a ul for semantic and a11y simplicity, but incorporate a css class that emulates some of the layout functionality we gained from the custom component. might need to break away from the built-in component in order to create one that's flexible so that it has the desired behavior on mobile v desktop. -b 1/13/25-->
-                        <a role="listitem" href="https://www.sjsu.edu/">Home</a>
-                        <a role="listitem" href="https://www.sjsu.edu/migration/">Migration</a>
-                        <a role="listitem" href="https://www.sjsu.edu/migration/showcase/">Showcase</a>
-                        <a role="listitem" aria-current="page">Landing Page Components</a>
-                    </cluster-l>
+                    <ol>
+                        <li><a href="https://www.sjsu.edu/">Home</a></li>
+                        <li><a href="https://www.sjsu.edu/migration/">Migration</a></li>
+                        <li><a href="https://www.sjsu.edu/migration/showcase/">Showcase</a></li>
+                        <li><a aria-current="page">Landing Page Components</a></li>
+                    </ol>
                 </nav>
             </div>
+-->
             <div class="sjsu-theme-default">
                 <stack-l class="container padding-half" space="0">
                     <a class="title-site" href="#">Digital Governance</a>
@@ -383,7 +392,7 @@ angle bracket svg
 
     <img class="o-coin" src="https://www.sjsu.edu/aspis/media/brand/icon-spartan-withbackground.svg" alt="" />
 
-    <footer class="sjsu-theme-blue wrap bg-diamonds" role="contentinfo">
+    <footer class="sjsu-theme-blue wrap bg-diamonds u-gradientbar-blue-to-gold" role="contentinfo">
         <div class="container">
             <h2 class="show-for-sr">Footer</h2>
 

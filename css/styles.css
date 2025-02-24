@@ -211,7 +211,8 @@ textarea:not([rows]) {
     --sjsu-color-paseo-gray: #ededed;
     --sjsu-color-normal-gray: #9b9b9b;
     --sjsu-color-orange: #f08700;
-    --sjsu-gradient-blues: linear-gradient(-180deg, #0055a2 20%, #0761b3 100%);
+    --sjsu-gradient-blues: linear-gradient(-180deg, #0055a8 20%, #0761b3 100%);
+    --sjsu-gradient-blue-to-gold: linear-gradient(90deg, #1c88f4 0%, #e5a823 73%);
     /* vr = vertical rhythm */
     --sjsu-vr: 2rem;
     --sjsu-2vr: calc(2 * var(--sjsu-vr));
@@ -235,7 +236,8 @@ textarea:not([rows]) {
     --button-color: var(--sjsu-color-blue);    
     --fill-color: white;
     --stroke-color: transparent;
-
+    --bar-thin: 10px;
+    --bar-thick: 28px;
     --angle-bracket-down: url('data:image/svg+xml');
 /*
 look at updating our color usage for gradients to oklch 1.13.25 -b
@@ -272,7 +274,8 @@ header {
     --_font-size: var(--font-size, var(--step-0, 1rem));
     --_font-family: var(--font-display, inherit);
     font-size: var(--_font-size);
-    font-family: var(--_font-family);    
+    font-family: var(--_font-family);
+    --bar-size: var(--bar-thin);
 }
 
 header button {
@@ -286,7 +289,8 @@ body {
     --_font-size: var(--font-size, var(--step-0, 1rem));
     --_font-family: var(--font-body, inherit);
     font-size: var(--_font-size);
-    font-family: var(--_font-family);    
+    font-family: var(--_font-family);
+    --bar-size: var(--bar-thin);
 }
 
 /* hold off on forced-max-size until later, layout primitives handle this for now -b 5.29
@@ -335,7 +339,7 @@ a:focus
     --link-color: var(--sjsu-color-rollover-blue);
 }
 
-a:is([class]):not(:hover) {
+a:is([class]):not(:hover):not(:focus):not(:active) {
     text-decoration: none;
 }
 
@@ -367,13 +371,14 @@ hr {
     border-block-start: 1px solid var(--sjsu-color-normal-gray);
 }
 
-    footer {
-        padding-block-start:64px;
-        background: url(https://www.sjsu.edu/aspis/media/bgs/bg-triangles-up-big.svg), var(--sjsu-gradient-blues);
-        background-position-y: bottom;
-        background-size: 100%, 100%;
-        border-top: 5px solid var(--sjsu-color-gold);        
-    }
+footer {
+    padding-block-start:64px;
+    background: url(https://www.sjsu.edu/aspis/media/bgs/bg-triangles-up-big.svg), var(--sjsu-gradient-blues);
+    background-position-y: bottom;
+    background-size: 100%, 100%;
+    border-top: 4.5px solid var(--sjsu-color-gold);
+    --bar-size: var(--bar-thick);
+}
     
     footer :is(p, li) {
         --font-size: var(--step--1);
@@ -402,6 +407,8 @@ hr {
     --button-color: var(--sjsu-color-blue);
     --fill-color: white;
 }
+
+/* TODO replace ".bg" with the class attribute selector construction similar to :is */
 .sjsu-theme-blue:not(.bg) {
     --background-color: var(--sjsu-color-blue);
 }
@@ -610,6 +617,10 @@ https://codepen.io/kevinpowell/pen/wvZvdLN
 /* maybe use a nav element for .bc? -b */
 .breadcrumb {
     font-size: var(--step--2);
+}
+
+.breadcrumb a:not(:hover):not(:active):not(:focus) {
+    text-decoration: none;
 }
 
 .breadcrumb a:not(:last-child)::after {
@@ -916,8 +927,20 @@ This should be controlled using the theme class, otherwise it has to get re-decl
         position: absolute;
         white-space: nowrap;
     }
+    /* overlap with newer visually-hidden. refactor here. these declarations impair interactive elements -b 1/13/25 */
+    .show-for-sr,
+    .show-on-focus {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0; }
 
-/* This class will limit text content to the value of the "line-clamp" property */
+
+    /* This class will limit text content to the value of the "line-clamp" property */
     .line-limit {
         display: -webkit-box;
         -webkit-line-clamp: 1;
@@ -934,17 +957,13 @@ This should be controlled using the theme class, otherwise it has to get re-decl
     }
 
 
-    /* overlap with newer visually-hidden. refactor here. these declarations impair interactive elements -b 1/13/25 */
-    .show-for-sr,
-    .show-on-focus {
-        position: absolute !important;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0; }    
+.u-gradientbar-blue-to-gold::after {
+    --_bar-size: var(--bar-size, 1rem);
+    display:block;
+    content:'';
+    padding-top: var(--_bar-size);
+    background-image: var(--sjsu-gradient-blue-to-gold);
+}
     
 .u-bg-diamonds {
     background:	linear-gradient(rgba(255,255,255,1),rgba(255,255,255,0)), url('https://www.sjsu.edu/aspis/media/bgs/bg-sjsu-diamonds.svg') repeat #ffffff; 
